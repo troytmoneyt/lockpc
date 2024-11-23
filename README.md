@@ -1,0 +1,2 @@
+# lockpc
+Lock computer remotly 
