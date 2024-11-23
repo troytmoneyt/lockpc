@@ -44,11 +44,11 @@
         const lockButton = document.getElementById('lockButton');
         const unlockButton = document.getElementById('unlockButton');
 
-        const statusFileURL = '/lock_status.txt';
+        const phpFileURL = '/update_status.php'; // Path to the PHP script
 
         // Fetch the current lock status
         function fetchStatus() {
-            fetch(statusFileURL)
+            fetch(phpFileURL)
                 .then(response => response.text())
                 .then(data => {
                     statusDiv.textContent = `Status: ${data.trim().toUpperCase()}`;
@@ -59,15 +59,17 @@
                 });
         }
 
-        // Update the lock status file
+        // Update the lock status using the PHP backend
         function updateStatus(status) {
-            fetch(statusFileURL, {
+            fetch(phpFileURL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'text/plain' },
                 body: status,
             })
-                .then(() => {
-                    statusDiv.textContent = `Status: ${status.toUpperCase()}`;
+                .then(response => response.text())
+                .then(data => {
+                    console.log(data); // Log response from PHP
+                    fetchStatus(); // Refresh the status display
                 })
                 .catch(error => {
                     console.error('Error updating status:', error);
