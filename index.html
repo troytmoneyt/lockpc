@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lock Computer Control</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .status {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="status" id="status">Status: Loading...</div>
+    <button id="lockButton">Lock Computer</button>
+    <button id="unlockButton">Unlock Computer</button>
+
+    <script>
+        const statusDiv = document.getElementById('status');
+        const lockButton = document.getElementById('lockButton');
+        const unlockButton = document.getElementById('unlockButton');
+
+        const statusFileURL = '/lock_status.txt';
+
+        // Fetch the current lock status
+        function fetchStatus() {
+            fetch(statusFileURL)
+                .then(response => response.text())
+                .then(data => {
+                    statusDiv.textContent = `Status: ${data.trim().toUpperCase()}`;
+                })
+                .catch(error => {
+                    console.error('Error fetching status:', error);
+                    statusDiv.textContent = 'Status: Error';
+                });
+        }
+
+        // Update the lock status file
+        function updateStatus(status) {
+            fetch(statusFileURL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain' },
+                body: status,
+            })
+                .then(() => {
+                    statusDiv.textContent = `Status: ${status.toUpperCase()}`;
+                })
+                .catch(error => {
+                    console.error('Error updating status:', error);
+                    alert('Failed to update status.');
+                });
+        }
+
+        lockButton.addEventListener('click', () => updateStatus('locked'));
+        unlockButton.addEventListener('click', () => updateStatus('unlocked'));
+
+        // Check status periodically
+        setInterval(fetchStatus, 1000);
+        fetchStatus(); // Initial fetch
+    </script>
+</body>
+</html>
